@@ -1,0 +1,35 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#form-container{
+    display: flex;
+    position: relative;
+    font-size: 20px;
+    background-color: pink;
+    height: 100vh;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    justify-content: center;
+    color: white;
+    width: 25vw;
+    height: 30vh;
+    right: 700px;
+    top: 300px;
+    
+}
+
+#sub-btn{
+    height: 4vh;
+    width: 5vw;
+}
+
+.input-field{
+    height: 3vh;
+    font-size: 20px;
+}
