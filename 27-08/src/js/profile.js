@@ -3,7 +3,8 @@ async function carregarPerfil() {
   const token = localStorage.getItem("token"); // pega token do localStorage
 
   if (!token) {
-    document.getElementById("mensagem").textContent = "Usuário não autenticado!";
+    document.getElementById("mensagem").textContent =
+      "Usuário não autenticado!";
     document.getElementById("mensagem").style.color = "red";
     return;
   }
@@ -15,7 +16,6 @@ async function carregarPerfil() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token, // envia token
       },
-      
     });
 
     if (!resposta.ok) {
@@ -35,37 +35,82 @@ async function carregarPerfil() {
     document.getElementById("mensagem").style.color = "red";
   }
 
-  document.getElementById("upd-btn").addEventListener("submit", async function (event) {
+  const btnAtualizar = document.getElementById("upd-btn");
+  const btnDeletar = document.getElementById("btn-delete");
 
-      const name = document.getElementById("nome").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("senha").value;
+  btnAtualizar.addEventListener("click", async () => {
+    const name = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("senha").value;
 
-      try {
-        const resposta = await fetch("http://localhost:3000/users/me", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Autorization: "Bearer " + token,
-          },
+    const dadosParaAtualizar = {};
+    if (name) {
+      dadosParaAtualizar.name = name;
+    }
+    if (email) {
+      dadosParaAtualizar.email = email;
+    }
+    if (password) {
+      dadosParaAtualizar.password = password;
+    }
+    if (
+      !dadosParaAtualizar.name &&
+      !dadosParaAtualizar.email &&
+      !dadosParaAtualizar.password
+    ) {
+      document.getElementById("mensagem").textContent =
+        "Nenhum campo para atualizar";
+      document.getElementById("mensagem").style.color = "red";
+    }
 
-        });
+    try {
+      const resposta = await fetch("http://localhost:3000/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Autorization: "Bearer " + token,
+        },
+        body: JSON.stringify(dadosParaAtualizar),
+      });
 
-        if (!resposta.ok) {
-          const erro = await resposta.text();
-          throw new Error(erro);
-        }
-
-        const user = await resposta.json();
-      } catch (erro) {
-
-
-        console.error("Erro:", erro);
-        document.getElementById("mensagem").textContent =
-          "Erro ao carregar perfil: " + erro.message;
-        document.getElementById("mensagem").style.color = "red";
+      if (!resposta.ok) {
+        const erro = await resposta.text();
+        throw new Error(erro);
       }
-    });
+
+      const user = await resposta.json();
+    } catch (erro) {
+      console.error("Erro:", erro);
+      document.getElementById("mensagem").textContent ="Erro ao atualizar perfil: " + erro.message;
+      document.getElementById("mensagem").style.color = "red";
+    }
+  });
+
+  btnDeletar.addEventListener("click", async () => {
+    try {
+      const resposta = await fetch("http://localhost:3000/users/me", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Autorization: "Bearer " + token,
+        },
+      });
+
+      if (!resposta.ok) {
+        const erro = await resposta.text();
+        throw new Error(erro);
+      }
+      document.getElementById("mensagem").textContent = "Usuario deletado!";
+      document.getElementById("mensagem").style.color = "green";
+
+      window.location.href = "login.html";
+    } catch (error) {
+      console.error("Erro:", error);
+      document.getElementById("mensagem").textContent =
+        "Erro ao deletar usuario: " + error.message;
+      document.getElementById("mensagem").style.color = "red";
+    }
+  });
 }
 
 // Carrega o perfil assim que a página é aberta
